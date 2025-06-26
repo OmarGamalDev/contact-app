@@ -20,32 +20,46 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: Color(0xff29384D),
 
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xffFFF1D4),
-        child: const Icon(Icons.add),
-        onPressed: () {
-          final parentContext = context;
-
-          showModalBottomSheet(
-            context: parentContext,
-            isScrollControlled: true,
-            backgroundColor: Colors.transparent,
-            builder:
-                (context) => Padding(
-                  padding: EdgeInsets.only(
-                    bottom: MediaQuery.of(context).viewInsets.bottom,
-                  ),
-                  child: AddContactBottomSheet(
-                    onContactAdded: (contact) {
-                      setState(() {
-                        contacts.add(contact);
-                      });
-                    },
-                    parentContext: parentContext,
-                  ),
-                ),
-          );
-        },
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            backgroundColor: const Color(0xffF93E3E),
+            child: const Icon(Icons.delete),
+            onPressed: () {
+              setState(() {
+                contacts.clear();
+              });
+            },
+          ),
+          SizedBox(height: 10.h),
+          FloatingActionButton(
+            backgroundColor: const Color(0xffFFF1D4),
+            child: const Icon(Icons.add),
+            onPressed: () {
+              final parentContext = context;
+              showModalBottomSheet(
+                context: parentContext,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder:
+                    (context) => Padding(
+                      padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).viewInsets.bottom,
+                      ),
+                      child: AddContactBottomSheet(
+                        onContactAdded: (contact) {
+                          setState(() {
+                            contacts.add(contact);
+                          });
+                        },
+                        parentContext: parentContext,
+                      ),
+                    ),
+              );
+            },
+          ),
+        ],
       ),
       body:
           contacts.isEmpty
