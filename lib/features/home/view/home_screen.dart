@@ -1,4 +1,4 @@
-import 'package:contact_app/features/home/floating_action_button.dart';
+import 'package:contact_app/features/home/widgets/floating_action_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -17,7 +17,6 @@ class HomeScreen extends StatelessWidget {
           Image.asset(
             'assets/images/contact_image.png',
             fit: BoxFit.cover,
-            //BackgroundColor: Color(0xff29384D),
             width: 368.w,
             height: 368.h,
           ),
