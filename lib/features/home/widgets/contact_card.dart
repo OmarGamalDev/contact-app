@@ -2,6 +2,15 @@ import 'dart:io';
 import 'package:contact_app/features/home/model/contact_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:url_launcher/url_launcher.dart';
+Future<void> makePhoneCall(String phoneNumber) async {
+  final Uri callUri = Uri(scheme: 'tel', path: phoneNumber);
+  if (await canLaunchUrl(callUri)) {
+    await launchUrl(callUri);
+  } else {
+    throw 'Could not launch $callUri';
+  }
+}
 
 class ContactCard extends StatelessWidget {
   final ContactModel contact;
@@ -97,6 +106,12 @@ class ContactCard extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
+                        IconButton(
+                          icon :Icon(Icons.call, color: Colors.green, size: 20),
+                          onPressed: () {
+                            makePhoneCall(contact.phoneNumber);
+                          },
+                        )
                       ],
                     ),
                     ElevatedButton(
