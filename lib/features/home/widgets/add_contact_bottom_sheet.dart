@@ -1,13 +1,34 @@
+import 'dart:io';
+import 'package:contact_app/features/home/model/contact_model.dart';
 import 'package:contact_app/features/home/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:image_picker/image_picker.dart';
 
-class AddContactBottomSheet extends StatelessWidget {
-  AddContactBottomSheet({super.key});
+class AddContactBottomSheet extends StatefulWidget {
+  final Function(ContactModel) onContactAdded;
+  const AddContactBottomSheet({super.key, required this.onContactAdded});
+  @override
+  State<AddContactBottomSheet> createState() => _AddContactBottomSheetState();
+}
 
+class _AddContactBottomSheetState extends State<AddContactBottomSheet> {
   final TextEditingController nameController = TextEditingController();
+
   final TextEditingController phoneController = TextEditingController();
+
   final TextEditingController emailController = TextEditingController();
+  File? selectedImage;
+  Future<void> pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      setState(() {
+        selectedImage = File(image.path);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,20 +50,32 @@ class AddContactBottomSheet extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Container(
-                    width: 143.w,
-                    height: 146.h,
-                    decoration: BoxDecoration(
-                      color: Color(0xff29384D),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Color(0XFFFFF1D4), width: 2),
-                    ),
-                    child: Center(
-                      child: Image.asset(
-                        "assets/images/add_photo.png",
-                        width: 124.w,
-                        height: 124.h,
+                  GestureDetector(
+                    onTap: pickImage,
+                    child: Container(
+                      width: 143.w,
+                      height: 146.h,
+                      decoration: BoxDecoration(
+                        color: Color(0xff29384D),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Color(0XFFFFF1D4), width: 2),
                       ),
+                      child:
+                          selectedImage != null
+                              ? ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Image.file(
+                                  selectedImage!,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                              : Center(
+                                child: Image.asset(
+                                  "assets/images/add_photo.png",
+                                  width: 124.w,
+                                  height: 124.h,
+                                ),
+                              ),
                     ),
                   ),
                   SizedBox(width: 16.w),
@@ -99,7 +132,12 @@ class AddContactBottomSheet extends StatelessWidget {
               height: 48.h,
               child: ElevatedButton(
                 onPressed: () {
-                  // هترجع البيانات هنا بعدين
+                  final newContact = ContactModel(
+                    name: nameController.text.trim(),
+                    email: emailController.text.trim(),
+                    phoneNumber: phoneController.text.trim(),
+                    image: selectedImage?.path ?? '',
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xffFFF1D4),

@@ -17,7 +17,11 @@ class CustomFloatingActionButton extends StatelessWidget {
                 padding: EdgeInsets.only(
                   bottom: MediaQuery.of(context).viewInsets.bottom,
                 ),
-                child: AddContactBottomSheet(),
+                child: AddContactBottomSheet(
+                  onContactAdded: (ContactModel) {
+                    Navigator.pop(context);
+                  },
+                ),
               ),
         );
       },

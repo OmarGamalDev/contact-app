@@ -6,7 +6,7 @@ Route<dynamic>onGenerateRoute(RouteSettings settings)
 {
   switch (settings.name){
     case HomeScreen.routename:
-      return MaterialPageRoute(builder: (_)=> const HomeScreen());
+      return MaterialPageRoute(builder: (_)=> HomeScreen());
     default:
       return MaterialPageRoute(builder: (_)=> Scaffold());
   }
