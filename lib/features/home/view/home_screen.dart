@@ -1,64 +1,96 @@
-import 'dart:io';
-
 import 'package:contact_app/features/home/model/contact_model.dart';
-import 'package:contact_app/features/home/widgets/floating_action_button.dart';
+import 'package:contact_app/features/home/widgets/add_contact_bottom_sheet.dart';
+import 'package:contact_app/features/home/widgets/contact_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class HomeScreen extends StatelessWidget {
-   HomeScreen({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
   static const routename = "home";
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   List<ContactModel> contacts = [];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xff29384D),
-      floatingActionButton: CustomFloatingActionButton(),
-      body: contacts.isEmpty? 
-      Center(
-        child: Column(
-          children: [
-            SizedBox(height: 150.h),
-            Image.asset(
-              'assets/images/contact_image.png',
-              fit: BoxFit.cover,
-              width: 368.w,
-              height: 368.h,
-            ),
-            Text(
-              'There is No Contacts Added Here',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20.sp,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
-      ):
-      ListView.builder(
-        itemCount: contacts.length,
-        itemBuilder: (context, index) {
-          final contact = contacts[index];
-          return ListTile(
-            leading: CircleAvatar(
-              backgroundImage: contact.image.isNotEmpty
-                  ? FileImage(File(contact.image))
-                  : AssetImage('assets/images/default_avatar.png')
-                      as ImageProvider,
-            ),
-            title: Text(
-              contact.name,
-              style: TextStyle(color: Colors.white, fontSize: 18.sp),
-            ),
-            subtitle: Text(
-              contact.phoneNumber,
-              style: TextStyle(color: Colors.white70, fontSize: 16.sp),
-            ),
+
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xffFFF1D4),
+        child: const Icon(Icons.add),
+        onPressed: () {
+          final parentContext = context;
+
+          showModalBottomSheet(
+            context: parentContext,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            builder:
+                (context) => Padding(
+                  padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom,
+                  ),
+                  child: AddContactBottomSheet(
+                    onContactAdded: (contact) {
+                      setState(() {
+                        contacts.add(contact);
+                      });
+                    },
+                    parentContext: parentContext,
+                  ),
+                ),
           );
         },
       ),
+      body:
+          contacts.isEmpty
+              ? Center(
+                child: Column(
+                  children: [
+                    SizedBox(height: 150.h),
+                    Image.asset(
+                      'assets/images/contact_image.png',
+                      fit: BoxFit.cover,
+                      width: 368.w,
+                      height: 368.h,
+                    ),
+                    Text(
+                      'There is No Contacts Added Here',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20.sp,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+              : Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: GridView.builder(
+                  itemCount: contacts.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 0.05,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                  ),
+                  itemBuilder:
+                      (context, index) => ContactCard(
+                        contact: contacts[index],
+                        onDelete: () {
+                          setState(() {
+                            contacts.removeAt(index);
+                          });
+                        },
+                      ),
+                ),
+              ),
     );
   }
 }
