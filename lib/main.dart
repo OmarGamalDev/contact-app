@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'core/constants/routes.dart';
 import 'features/home/view/home_screen.dart';
@@ -12,10 +13,17 @@ class ContactApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      onGenerateRoute: onGenerateRoute,
-      initialRoute: HomeScreen.routename,
+    return ScreenUtilInit(
+      designSize: const Size(402, 874),
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (context, child) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          onGenerateRoute: onGenerateRoute,
+          initialRoute: HomeScreen.routename,
+        );
+      },
     );
   }
 }
