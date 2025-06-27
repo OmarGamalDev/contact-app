@@ -42,7 +42,7 @@ A simple and elegant **Flutter contacts management app** that allows users to ad
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/your_username/contact_app.git
+   git clone https://github.com/OmarGamalDev/contact-app.git
    cd contact_app
    ```
 
@@ -103,4 +103,4 @@ lib/
 
 Made with by **Omar Gamal**
 
-[LinkedIn](https://www.linkedin.com/in/omar-gamal-6508652a1/) • [GitHub](https://github.com/OmarGamal-MobileApps-developer)
+[LinkedIn](https://www.linkedin.com/in/omar-gammal/) • [GitHub](https://github.com/OmarGamalDev)
