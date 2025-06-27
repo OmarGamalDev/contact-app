@@ -1,102 +1,98 @@
 import 'package:contact_app/features/home/model/contact_model.dart';
 import 'package:contact_app/features/home/widgets/add_contact_bottom_sheet.dart';
 import 'package:contact_app/features/home/widgets/contact_card.dart';
+import 'package:contact_app/features/home/widgets/custom_floating_action_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
-  static const routename = "home";
+  static const routeName = "home";
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<ContactModel> contacts = [];
+  final List<ContactModel> contacts = [];
+
+  void addContact(ContactModel contact) {
+    setState(() => contacts.add(contact));
+  }
+
+  void deleteContact(int index) {
+    setState(() => contacts.removeAt(index));
+  }
+
+  void clearContacts() {
+    setState(() => contacts.clear());
+  }
+
+  void showAddContactBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => AddContactBottomSheet(
+        onContactAdded: addContact,
+        parentContext: context,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xff29384D),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
+      backgroundColor: const Color(0xff29384D),
+      floatingActionButton: CustomFloatingActionButton(
+        onAddPressed: showAddContactBottomSheet,
+        onClearPressed: clearContacts,
+      ),
+      body: contacts.isEmpty ? buildEmptyState() : buildContactGrid(),
+    );
+  }
+
+  Widget buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          FloatingActionButton(
-            backgroundColor: const Color(0xffF93E3E),
-            child: const Icon(Icons.delete),
-            onPressed: () {
-              setState(() {
-                contacts.clear();
-              });
-            },
+          Image.asset(
+            'assets/images/contact_image.png',
+            fit: BoxFit.cover,
+            width: 368.w,
+            height: 368.h,
           ),
-          SizedBox(height: 10.h),
-          FloatingActionButton(
-            backgroundColor: const Color(0xffFFF1D4),
-            child: const Icon(Icons.add),
-            onPressed: () {
-              showModalBottomSheet(
-                context: context,
-                isScrollControlled: true,
-                backgroundColor: Colors.transparent,
-                builder:
-                    (context) => AddContactBottomSheet(
-                      onContactAdded: (contact) {
-                        setState(() => contacts.add(contact));
-                      },
-                      parentContext: context,
-                    ),
-              );
-            },
+          SizedBox(height: 16.h),
+          Text(
+            'There is No Contacts Added Here',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20.sp,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ],
       ),
-      body:
-          contacts.isEmpty
-              ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      'assets/images/contact_image.png',
-                      fit: BoxFit.cover,
-                      width: 368.w,
-                      height: 368.h,
-                    ),
-                    SizedBox(height: 16.h),
-                    Text(
-                      'There is No Contacts Added Here',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20.sp,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              )
-              : Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: GridView.builder(
-                  itemCount: contacts.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 0.62,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                  ),
-                  itemBuilder:
-                      (context, index) => ContactCard(
-                        contact: contacts[index],
-                        onDelete: () {
-                          setState(() {
-                            contacts.removeAt(index);
-                          });
-                        },
-                      ),
-                ),
-              ),
+    );
+  }
+
+  Widget buildContactGrid() {
+    return Padding(
+      padding: EdgeInsets.all(12.w),
+      child: GridView.builder(
+        itemCount: contacts.length,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 0.62,
+          crossAxisSpacing: 10.w,
+          mainAxisSpacing: 10.h,
+        ),
+        itemBuilder: (context, index) => ContactCard(
+          contact: contacts[index],
+          onDelete: () => deleteContact(index),
+        ),
+      ),
     );
   }
 }

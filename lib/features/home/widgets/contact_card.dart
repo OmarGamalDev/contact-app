@@ -1,3 +1,4 @@
+
 import 'dart:io';
 import 'package:contact_app/features/home/model/contact_model.dart';
 import 'package:flutter/material.dart';
@@ -37,7 +38,6 @@ class ContactCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          /// الصورة
           ClipRRect(
             borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
             child: Image.file(
@@ -47,30 +47,25 @@ class ContactCard extends StatelessWidget {
               fit: BoxFit.cover,
             ),
           ),
-
-          /// البيانات
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 8.w),
+            child: Text(
+              contact.name,
+              style: TextStyle(
+                color: Color(0xff29384D),
+                fontSize: 14.sp,
+                fontWeight: FontWeight.bold,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
           Expanded(
             child: Padding(
               padding: EdgeInsets.all(8.w),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  /// الاسم
-                  Center(
-                    child: Text(
-                      contact.name,
-                      style: TextStyle(
-                        color: Color(0xff29384D),
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  SizedBox(height: 6.h),
-
-                  /// الإيميل
                   Row(
                     children: [
                       Icon(Icons.email, size: 16.sp, color: Color(0xff29384D)),
@@ -89,8 +84,6 @@ class ContactCard extends StatelessWidget {
                     ],
                   ),
                   SizedBox(height: 4.h),
-
-                  /// الرقم مع زر الاتصال
                   Row(
                     children: [
                       Icon(Icons.phone, size: 16.sp, color: Color(0xff29384D)),
@@ -115,8 +108,6 @@ class ContactCard extends StatelessWidget {
                     ],
                   ),
                   const Spacer(),
-
-                  /// زر الحذف
                   SizedBox(
                     width: double.infinity,
                     height: 30.h,
