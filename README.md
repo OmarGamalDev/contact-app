@@ -8,7 +8,7 @@ A simple and elegant **Flutter contacts management app** that allows users to ad
 
 | Home Screen | Contacts Grid | Add Contact |
 |-------------|---------------|--------------|
-| ![](assets/screenshots/homeScreen.png) | ![](assets/screenshots/contacts.png) | ![](assets/screenshots/addContacts.png) |
+| ![](assets/screenshots/homeScreen.png) |![](assets/screenshots/addContacts.png) |![](assets/screenshots/contacts.png) |
 
 ---
 
