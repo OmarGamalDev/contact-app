@@ -2,175 +2,174 @@ import 'dart:io';
 import 'package:contact_app/features/home/model/contact_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
+
 Future<void> makePhoneCall(String phoneNumber) async {
-  final Uri callUri = Uri(scheme: 'tel', path: phoneNumber);
-  if (await canLaunchUrl(callUri)) {
-    await launchUrl(callUri);
+  var status = await Permission.phone.status;
+  if (!status.isGranted) {
+    await Permission.phone.request();
+  }
+
+  if (await Permission.phone.isGranted) {
+    await FlutterPhoneDirectCaller.callNumber(phoneNumber);
   } else {
-    throw 'Could not launch $callUri';
+    print("Phone permission not granted");
   }
 }
 
 class ContactCard extends StatelessWidget {
   final ContactModel contact;
   final VoidCallback onDelete;
+
   const ContactCard({super.key, required this.contact, required this.onDelete});
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: SizedBox(
-        width: 177.w,
-        height: 286.h,
-        child: Container(
-          decoration: BoxDecoration(
-            color: const Color(0xffFFF1D4),
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black26,
-                blurRadius: 6,
-                offset: Offset(2, 4),
-              ),
-            ],
+    return Container(
+      width: 177.w,
+      decoration: BoxDecoration(
+        color: const Color(0xffFFF1D4),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(color: Colors.black26, blurRadius: 6, offset: Offset(2, 4)),
+        ],
+      ),
+      child: Column(
+        children: [
+          /// الصورة
+          ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+            child: Image.file(
+              File(contact.image),
+              height: 120.h,
+              width: double.infinity,
+              fit: BoxFit.cover,
+            ),
           ),
-          child: Column(
-            children: [
-              Stack(
+
+          /// البيانات
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.all(8.w),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ClipRRect(
-                    child: Image.file(
-                      File(contact.image),
-                      height: 177.h,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
+                  /// الاسم
+                  Center(
+                    child: Text(
+                      contact.name,
+                      style: TextStyle(
+                        color: Color(0xff29384D),
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  Positioned(
-                    bottom: 5,
-                    left: 8,
-                    child: Container(
-                      width: 84.w,
-                      height: 33.h,
-                      decoration: BoxDecoration(
-                        color: Color(0xffFFF1D4),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Center(
+                  SizedBox(height: 6.h),
+
+                  /// الإيميل
+                  Row(
+                    children: [
+                      Icon(Icons.email, size: 16.sp, color: Color(0xff29384D)),
+                      SizedBox(width: 4.w),
+                      Expanded(
                         child: Text(
-                          contact.name,
+                          contact.email,
                           style: TextStyle(
+                            fontSize: 10.sp,
                             color: Color(0xff29384D),
-                            fontSize: 14.sp,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 4.h),
+
+                  /// الرقم مع زر الاتصال
+                  Row(
+                    children: [
+                      Icon(Icons.phone, size: 16.sp, color: Color(0xff29384D)),
+                      SizedBox(width: 4.w),
+                      Expanded(
+                        child: Text(
+                          contact.phoneNumber,
+                          style: TextStyle(
+                            fontSize: 10.sp,
+                            color: Color(0xff29384D),
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.call, color: Colors.green, size: 20),
+                        onPressed: () {
+                          makePhoneCall(contact.phoneNumber);
+                        },
+                      ),
+                    ],
+                  ),
+                  const Spacer(),
+
+                  /// زر الحذف
+                  SizedBox(
+                    width: double.infinity,
+                    height: 30.h,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder:
+                              (context) => AlertDialog(
+                                title: const Text("Delete Contact"),
+                                content: const Text(
+                                  "Are you sure you want to delete this contact?",
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed:
+                                        () => Navigator.of(context).pop(),
+                                    child: const Text("Cancel"),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                      onDelete();
+                                    },
+                                    child: const Text("Delete"),
+                                  ),
+                                ],
+                              ),
+                        );
+                      },
+                      icon: Icon(
+                        Icons.delete,
+                        size: 14.sp,
+                        color: Colors.white,
+                      ),
+                      label: Text(
+                        "Delete",
+                        style: TextStyle(color: Colors.white, fontSize: 12.sp),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xffF93E3E),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        padding: EdgeInsets.zero,
                       ),
                     ),
                   ),
                 ],
               ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 8.h),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Icon(Icons.email, color: Color(0xff29384D), size: 20),
-                        SizedBox(width: 6),
-                        Expanded(
-                          child: Text(
-                            contact.email,
-                            style: TextStyle(
-                              color: Color(0xff29384D),
-                              fontSize: 10.sp,
-                              fontWeight: FontWeight.w500,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Icon(Icons.phone, color: Color(0xff29384D), size: 20),
-                        SizedBox(width: 6),
-                        Expanded(
-                          child: Text(
-                            contact.phoneNumber,
-                            style: TextStyle(
-                              color: Color(0xff29384D),
-                              fontSize: 10.sp,
-                              fontWeight: FontWeight.w500,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        IconButton(
-                          icon :Icon(Icons.call, color: Colors.green, size: 20),
-                          onPressed: () {
-                            makePhoneCall(contact.phoneNumber);
-                          },
-                        )
-                      ],
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: Text("Delete Contact"),
-                              content: Text(
-                                "Are you sure you want to delete this contact?",
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text("Cancel"),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                    onDelete();
-                                  },
-                                  child: Text("Delete"),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xffF93E3E),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.delete, color: Colors.white, size: 16.sp),
-                          SizedBox(width: 4),
-                          Text(
-                            "Delete",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 10.sp,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

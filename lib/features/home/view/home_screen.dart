@@ -19,7 +19,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xff29384D),
-
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -37,24 +36,16 @@ class _HomeScreenState extends State<HomeScreen> {
             backgroundColor: const Color(0xffFFF1D4),
             child: const Icon(Icons.add),
             onPressed: () {
-              final parentContext = context;
               showModalBottomSheet(
-                context: parentContext,
+                context: context,
                 isScrollControlled: true,
                 backgroundColor: Colors.transparent,
                 builder:
-                    (context) => Padding(
-                      padding: EdgeInsets.only(
-                        bottom: MediaQuery.of(context).viewInsets.bottom,
-                      ),
-                      child: AddContactBottomSheet(
-                        onContactAdded: (contact) {
-                          setState(() {
-                            contacts.add(contact);
-                          });
-                        },
-                        parentContext: parentContext,
-                      ),
+                    (context) => AddContactBottomSheet(
+                      onContactAdded: (contact) {
+                        setState(() => contacts.add(contact));
+                      },
+                      parentContext: context,
                     ),
               );
             },
@@ -65,14 +56,15 @@ class _HomeScreenState extends State<HomeScreen> {
           contacts.isEmpty
               ? Center(
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SizedBox(height: 150.h),
                     Image.asset(
                       'assets/images/contact_image.png',
                       fit: BoxFit.cover,
                       width: 368.w,
                       height: 368.h,
                     ),
+                    SizedBox(height: 16.h),
                     Text(
                       'There is No Contacts Added Here',
                       style: TextStyle(
@@ -90,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   itemCount: contacts.length,
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    childAspectRatio: 0.05,
+                    childAspectRatio: 0.62,
                     crossAxisSpacing: 10,
                     mainAxisSpacing: 10,
                   ),
