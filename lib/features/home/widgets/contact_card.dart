@@ -58,7 +58,7 @@ class ContactCard extends StatelessWidget {
       borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
       child: Image.file(
         File(contact.image),
-        height: 120.h,
+        height: 130.h,
         width: double.infinity,
         fit: BoxFit.cover,
       ),
