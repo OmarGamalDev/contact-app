@@ -21,7 +21,7 @@ class ContactApp extends StatelessWidget {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           onGenerateRoute: onGenerateRoute,
-          initialRoute: HomeScreen.routename,
+          initialRoute: HomeScreen.routeName,
         );
       },
     );
