@@ -1,0 +1,6 @@
+# Ignore non-Dart languages from linguist stats
+*.cpp linguist-vendored
+*.c linguist-vendored
+*.cmake linguist-vendored
+*.swift linguist-vendored
+*.html linguist-vendored
