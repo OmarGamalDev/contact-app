@@ -4,6 +4,7 @@ import 'package:contact_app/features/home/widgets/contact_card.dart';
 import 'package:contact_app/features/home/widgets/custom_floating_action_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hive/hive.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,32 +17,62 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   List<ContactModel> allContacts = [];
   List<ContactModel> contacts = [];
-
-  void addContact(ContactModel contact) {
-    setState(() {
-      allContacts.add(contact);
-      contacts = List.from(allContacts);
-    });
-  }
+  late Box<ContactModel> contactsBox;
+  late TextEditingController searchController;
+  String currentSearchQuery = '';
 
   @override
   void initState() {
     super.initState();
-    contacts = List.from(allContacts);
+    contactsBox = Hive.box<ContactModel>('contactsBox');
+    searchController = TextEditingController();
+
+    loadContacts();
+  }
+
+  void loadContacts() {
+    allContacts = contactsBox.values.toList();
+
+    if (currentSearchQuery.trim().isEmpty) {
+      contacts = List.from(allContacts);
+    } else {
+      contacts =
+          allContacts.where((contact) {
+            return contact.name.toLowerCase().contains(
+              currentSearchQuery.toLowerCase(),
+            );
+          }).toList();
+    }
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
+  void addContact(ContactModel contact) {
+    contactsBox.add(contact);
+    setState(() {
+      loadContacts();
+    });
   }
 
   void deleteContact(int index) {
+    final deletedContact = contacts[index];
+    deletedContact.delete();
     setState(() {
-      final deletedContact = contacts[index];
-      allContacts.remove(deletedContact);
-      contacts.removeAt(index);
+      loadContacts();
     });
   }
 
   void clearContacts() {
+    contactsBox.clear();
     setState(() {
       allContacts.clear();
       contacts.clear();
+      searchController.clear();
+      currentSearchQuery = '';
     });
   }
 
@@ -101,18 +132,11 @@ class _HomeScreenState extends State<HomeScreen> {
         Padding(
           padding: EdgeInsets.only(top: 40.h, left: 16.w, right: 16.w),
           child: TextField(
+            controller: searchController,
             onChanged: (query) {
               setState(() {
-                if (query.trim().isEmpty) {
-                  contacts = List.from(allContacts);
-                } else {
-                  contacts =
-                      allContacts.where((contact) {
-                        return contact.name.toLowerCase().contains(
-                          query.toLowerCase(),
-                        );
-                      }).toList();
-                }
+                currentSearchQuery = query;
+                loadContacts();
               });
             },
             decoration: InputDecoration(

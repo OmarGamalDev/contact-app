@@ -8,11 +8,7 @@ class ContactCard extends StatelessWidget {
   final ContactModel contact;
   final VoidCallback onDelete;
 
-  const ContactCard({
-    super.key,
-    required this.contact,
-    required this.onDelete,
-  });
+  const ContactCard({super.key, required this.contact, required this.onDelete});
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +72,7 @@ class ContactCard extends StatelessWidget {
         contact.name,
         style: TextStyle(
           color: const Color(0xff29384D),
-          fontSize: 14.sp,
+          fontSize: 17.sp,
           fontWeight: FontWeight.bold,
         ),
         maxLines: 1,
@@ -88,15 +84,12 @@ class ContactCard extends StatelessWidget {
   Widget _buildEmailRow() {
     return Row(
       children: [
-        Icon(Icons.email, size: 16.sp, color: const Color(0xff29384D)),
+        Icon(Icons.email, size: 18.sp, color: const Color(0xff29384D)),
         SizedBox(width: 4.w),
         Expanded(
           child: Text(
             contact.email,
-            style: TextStyle(
-              fontSize: 10.sp,
-              color: const Color(0xff29384D),
-            ),
+            style: TextStyle(fontSize: 15.sp, color: const Color(0xff29384D)),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -108,21 +101,22 @@ class ContactCard extends StatelessWidget {
   Widget _buildPhoneRow(BuildContext context) {
     return Row(
       children: [
-        Icon(Icons.phone, size: 16.sp, color: const Color(0xff29384D)),
+        Icon(Icons.phone, size: 18.sp, color: const Color(0xff29384D)),
         SizedBox(width: 4.w),
         Expanded(
           child: Text(
             contact.phoneNumber,
             style: TextStyle(
-              fontSize: 10.sp,
+              fontSize: 14.sp,
               color: const Color(0xff29384D),
+              fontWeight: FontWeight.bold,
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
         ),
         IconButton(
-          icon: const Icon(Icons.call, color: Colors.green, size: 20),
+          icon: const Icon(Icons.call, color: Colors.green, size: 18),
           onPressed: () => makePhoneCall(contact.phoneNumber),
         ),
       ],
@@ -135,20 +129,15 @@ class ContactCard extends StatelessWidget {
       height: 30.h,
       child: ElevatedButton.icon(
         onPressed: () => _showDeleteConfirmationDialog(context),
-        icon: Icon(
-          Icons.delete,
-          size: 14.sp,
-          color: Colors.white,
-        ),
+        icon: Icon(Icons.delete, size: 14.sp, color: Colors.white),
         label: Text(
           "Delete",
           style: TextStyle(color: Colors.white, fontSize: 12.sp),
         ),
+
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xffF93E3E),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           padding: EdgeInsets.zero,
         ),
       ),
@@ -158,23 +147,26 @@ class ContactCard extends StatelessWidget {
   void _showDeleteConfirmationDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Delete Contact"),
-        content: const Text("Are you sure you want to delete this contact?"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text("Cancel"),
+      builder:
+          (context) => AlertDialog(
+            title: const Text("Delete Contact"),
+            content: const Text(
+              "Are you sure you want to delete this contact?",
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text("Cancel"),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  onDelete();
+                },
+                child: const Text("Delete"),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              onDelete();
-            },
-            child: const Text("Delete"),
-          ),
-        ],
-      ),
     );
   }
 }
