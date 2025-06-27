@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import 'core/constants/routes.dart';
 import 'features/home/view/home_screen.dart';
 

@@ -14,18 +14,35 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final List<ContactModel> contacts = [];
+  List<ContactModel> allContacts = [];
+  List<ContactModel> contacts = [];
 
   void addContact(ContactModel contact) {
-    setState(() => contacts.add(contact));
+    setState(() {
+      allContacts.add(contact);
+      contacts = List.from(allContacts);
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    contacts = List.from(allContacts);
   }
 
   void deleteContact(int index) {
-    setState(() => contacts.removeAt(index));
+    setState(() {
+      final deletedContact = contacts[index];
+      allContacts.remove(deletedContact);
+      contacts.removeAt(index);
+    });
   }
 
   void clearContacts() {
-    setState(() => contacts.clear());
+    setState(() {
+      allContacts.clear();
+      contacts.clear();
+    });
   }
 
   void showAddContactBottomSheet() {
@@ -33,10 +50,11 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => AddContactBottomSheet(
-        onContactAdded: addContact,
-        parentContext: context,
-      ),
+      builder:
+          (context) => AddContactBottomSheet(
+            onContactAdded: addContact,
+            parentContext: context,
+          ),
     );
   }
 
@@ -78,21 +96,56 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget buildContactGrid() {
-    return Padding(
-      padding: EdgeInsets.all(12.w),
-      child: GridView.builder(
-        itemCount: contacts.length,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 0.62,
-          crossAxisSpacing: 10.w,
-          mainAxisSpacing: 10.h,
+    return Column(
+      children: [
+        Padding(
+          padding: EdgeInsets.only(top: 40.h, left: 16.w, right: 16.w),
+          child: TextField(
+            onChanged: (query) {
+              setState(() {
+                if (query.trim().isEmpty) {
+                  contacts = List.from(allContacts);
+                } else {
+                  contacts =
+                      allContacts.where((contact) {
+                        return contact.name.toLowerCase().contains(
+                          query.toLowerCase(),
+                        );
+                      }).toList();
+                }
+              });
+            },
+            decoration: InputDecoration(
+              hintText: 'Search Contact',
+              hintStyle: TextStyle(color: Colors.white),
+              prefixIcon: Icon(Icons.search, color: Colors.white),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            style: TextStyle(color: Colors.white, fontSize: 16.sp),
+          ),
         ),
-        itemBuilder: (context, index) => ContactCard(
-          contact: contacts[index],
-          onDelete: () => deleteContact(index),
+        Expanded(
+          child: Padding(
+            padding: EdgeInsets.all(12.w),
+            child: GridView.builder(
+              itemCount: contacts.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 0.62,
+                crossAxisSpacing: 10.w,
+                mainAxisSpacing: 10.h,
+              ),
+              itemBuilder:
+                  (context, index) => ContactCard(
+                    contact: contacts[index],
+                    onDelete: () => deleteContact(index),
+                  ),
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
 }
